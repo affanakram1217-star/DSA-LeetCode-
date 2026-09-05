@@ -2,11 +2,11 @@ class Solution {
 public:
     int minInsertions(string s) {
         int n=s.length();
-        vector<vector<int>> t(n,vector<int>(n));
+        vector<vector<int>> t(n,vector<int>(n,0));
 
-        for(int i=0;i<n;i++){
-            t[i][i]=0;
-        }
+        // for(int i=0;i<n;i++){
+        //     t[i][i]=0;
+        // }
 
         for(int L=2;L<=n;L++){
             for(int i=0;i+L-1<n;i++){
