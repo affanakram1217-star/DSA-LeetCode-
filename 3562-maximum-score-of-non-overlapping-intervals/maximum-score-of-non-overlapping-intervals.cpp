@@ -24,38 +24,38 @@ public:
         }
         return result;
     }
-    Node solve(vector<vector<int>>& intervals, int i, int k){
-        if(k==0 || i>=n){
-            return Node();
-        }
+    // Node solve(vector<vector<int>>& intervals, int i, int k){  //Recursion + MEMOIZATION
+    //     if(k==0 || i>=n){
+    //         return Node();
+    //     }
 
-        if(t[i][k].score!=-1){
-            return t[i][k];
-        }
+    //     if(t[i][k].score!=-1){
+    //         return t[i][k];
+    //     }
 
-        Node skip=solve(intervals, i+1, k);
-        //Current Node info
-        int weight=intervals[i][2];
-        int idx=intervals[i][3];
-        int j=nextIdx[i];
-        Node temp=solve(intervals,j,k-1);
-        Node take;
-        take.score=temp.score+ weight;
-        take.idxs=temp.idxs;
-        take.idxs.push_back(idx);
-        sort(take.idxs.begin(),take.idxs.end());
+    //     Node skip=solve(intervals, i+1, k);
+    //     //Current Node info
+    //     int weight=intervals[i][2];
+    //     int idx=intervals[i][3];
+    //     int j=nextIdx[i];
+    //     Node temp=solve(intervals,j,k-1);
+    //     Node take;
+    //     take.score=temp.score+ weight;
+    //     take.idxs=temp.idxs;
+    //     take.idxs.push_back(idx);
+    //     sort(take.idxs.begin(),take.idxs.end());
 
-        Node result;
-        if(skip.score>take.score){
-            result=skip;
-        }else if(skip.score<take.score){
-            result=take;
-        }else{
-            result=(skip.idxs<take.idxs)? skip:take;
-        }
+    //     Node result;
+    //     if(skip.score>take.score){
+    //         result=skip;
+    //     }else if(skip.score<take.score){
+    //         result=take;
+    //     }else{
+    //         result=(skip.idxs<take.idxs)? skip:take;
+    //     }
 
-        return t[i][k]=result;
-    }
+    //     return t[i][k]=result;
+    // }
     vector<int> maximumWeight(vector<vector<int>>& intervals) {
         n=intervals.size();
 
@@ -74,7 +74,38 @@ public:
         }
         int K=4;
         t.assign(n+1,vector<Node>(K+1));
-        return solve(intervals,0,K).idxs;
+
+
+        // return solve(intervals,0,K).idxs; recursion memoization
+
+        for(int i=n-1;i>=0;i--){
+            int weight=intervals[i][2];
+            int idx=intervals[i][3];
+            int j=nextIdx[i];
+
+            for(int k=1;k<=4;k++){
+                Node skip=t[i+1][k];
+                Node temp=t[j][k-1];
+                
+                Node take;
+                take.score=temp.score+ weight;
+                take.idxs=temp.idxs;
+                take.idxs.push_back(idx);
+                sort(take.idxs.begin(),take.idxs.end());
+
+                Node result;
+                if(skip.score>take.score){
+                    result=skip;
+                }else if(skip.score<take.score){
+                    result=take;
+                }else{
+                    result=(skip.idxs<take.idxs)? skip:take;
+                }
+
+                t[i][k]=result;
+            }
+        }
+        return t[0][K].idxs;
 
     }
 };
