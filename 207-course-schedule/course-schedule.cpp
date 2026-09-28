@@ -25,27 +25,30 @@ public:
     // }
     bool topologicalCheckBFS(vector<vector<int>>& adj, int numCourses, vector<int>& indegree){
         queue<int> q;
-
+        int cnt=0;
         for(int i=0;i<numCourses;i++){
             if(indegree[i]==0){
                 q.push(i);
+                cnt++;
             }
         }
 
-        int count=0;
+        // int count=0;
         while(!q.empty()){
             int u=q.front();
             q.pop();
-            count++;
+            // count++;
             
             for(int &v: adj[u]){
                 indegree[v]--;
                 if(indegree[v]==0){
                     q.push(v);
+                    cnt++;
                 }
             }
         }
-        return count==numCourses;
+        // return count==numCourses;
+        return cnt==numCourses;
     }
     bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
         // vector<bool> vis(numCourses,false);
