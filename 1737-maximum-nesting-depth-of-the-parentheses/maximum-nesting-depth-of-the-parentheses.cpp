@@ -9,10 +9,12 @@ public:
         for(int i=0;i<n;i++){
             if(s[i]=='('){
                 countOpen++;
-                depth=max(depth,countOpen-countClose);
+                
             }else if(s[i]==')'){
                 countClose++;
             }
+
+            depth=max(depth,countOpen-countClose);
         }
         return depth;
     }
