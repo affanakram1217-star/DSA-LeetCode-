@@ -1,14 +1,33 @@
 class Solution {
 public:
-    void dfs(int curr, unordered_map<int,vector<int>> &adj, vector<bool>& vis, long long &Size){
-        vis[curr]=true;
-        Size++;
+    // void dfs(int curr, unordered_map<int,vector<int>> &adj, vector<bool>& vis, long long &Size){
+    //     vis[curr]=true;
+    //     Size++;
 
-        for(int &v: adj[curr]){
-            if(!vis[v]){
-                dfs(v,adj,vis,Size);
+    //     for(int &v: adj[curr]){
+    //         if(!vis[v]){
+    //             dfs(v,adj,vis,Size);
+    //         }
+    //     }
+    // }
+        void bfs(int curr, unordered_map<int,vector<int>> &adj, vector<bool>& vis, long long &Size){
+            queue<int> q;
+            q.push(curr);
+            vis[curr]=true;
+            Size++;
+
+            while(!q.empty()){
+                int u=q.front();
+                q.pop();
+
+                for(int& v: adj[u]){
+                    if(!vis[v]){
+                        vis[v]=true;
+                        q.push(v);
+                        Size++;
+                    }
+                }
             }
-        }
     }
     long long countPairs(int n, vector<vector<int>>& edges) {
         unordered_map<int,vector<int>> adj;
@@ -28,7 +47,8 @@ public:
         for(int i=0;i<n;i++){
             if(!vis[i]){
                 long long Size=0;
-                dfs(i,adj,vis,Size);
+                // dfs(i,adj,vis,Size);
+                bfs(i,adj,vis,Size);
                 result+=(Size)*(remSize-Size);
                 remSize-=Size;
             }
