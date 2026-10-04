@@ -36,34 +36,64 @@ public:
         // return solve(0,open,s);
 
         //Approach-3 using Stacks
+        // int n=s.length();
+        // stack<int> openSt;
+        // stack<int> asteriskSt;
+
+        // for(int i=0;i<n;i++){
+        //     if(s[i]=='('){
+        //         openSt.push(i);
+        //     }else if(s[i]=='*'){
+        //         asteriskSt.push(i);
+        //     }else{
+        //         if(!openSt.empty()){
+        //             openSt.pop();
+        //         }else if(!asteriskSt.empty()){
+        //             asteriskSt.pop();
+        //         }else{
+        //             return false;
+        //         }
+        //     }
+        // }
+
+        // while(!openSt.empty() && !asteriskSt.empty()){
+        //     if(openSt.top()>asteriskSt.top()){
+        //         return false;
+        //     }
+        //     openSt.pop();
+        //     asteriskSt.pop();
+        // }
+
+        // return openSt.empty();
+
+        //Approach 4-> left to right and right to left traversal
         int n=s.length();
-        stack<int> openSt;
-        stack<int> asteriskSt;
+        int open=0;
+        int close=0;
 
+        //left to right
         for(int i=0;i<n;i++){
-            if(s[i]=='('){
-                openSt.push(i);
-            }else if(s[i]=='*'){
-                asteriskSt.push(i);
+            if(s[i]=='*'||s[i]=='('){
+                open++;
             }else{
-                if(!openSt.empty()){
-                    openSt.pop();
-                }else if(!asteriskSt.empty()){
-                    asteriskSt.pop();
-                }else{
-                    return false;
-                }
+                open--;
             }
-        }
-
-        while(!openSt.empty() && !asteriskSt.empty()){
-            if(openSt.top()>asteriskSt.top()){
+            if(open<0){
                 return false;
             }
-            openSt.pop();
-            asteriskSt.pop();
         }
 
-        return openSt.empty();
+        //right to left
+        for(int i=n-1;i>=0;i--){
+            if(s[i]=='*'||s[i]==')'){
+                close++;
+            }else{
+                close--;
+            }
+            if(close<0){
+                return false;
+            }
+        }
+        return true;
     }
 };
