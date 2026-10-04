@@ -17,6 +17,41 @@ public:
 
     //     return t[i][sum]=take||skip;
     // }
+
+    //knapsack approach
+    // bool solve(int n,int sum,vector<int>& nums){
+    //     if(sum==0){
+    //         return true;
+    //     }
+    //     if(n==0){
+    //         return false;
+    //     }
+    //     bool take=false;
+    //     bool skip=solve(n-1,sum,nums);
+    //     if(nums[n-1]<=sum){
+    //         take=solve(n-1,sum-nums[n-1],nums);
+    //     }
+    //     return skip||take;
+    // }
+    bool isSubsetSum(int S,vector<int>& nums){
+        vector<vector<bool>> t(n+1,vector<bool>(S+1,false));
+
+        for(int i=0;i<n+1;i++){
+            t[i][0]=true;
+        }
+
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<S+1;j++){
+                bool skip=t[i-1][j];
+                bool take=false;
+                if(nums[i-1]<=j){
+                    take=t[i-1][j-nums[i-1]];
+                }
+                t[i][j]=take||skip;
+            }
+        }
+        return t[n][S];
+    }
     bool canPartition(vector<int>& nums) {
         n=nums.size();
         int sum=0;
@@ -26,24 +61,28 @@ public:
         if(sum%2!=0){
             return false;
         }
-        int target=sum/2;
-        // vector<vector<int>> t(n,vector<int>(target+1,-1));
-        vector<vector<bool>> t(n+1,vector<bool>(target+1,false));
+        int S=sum/2;
+        return isSubsetSum(S,nums);
+        // return solve(n,S,nums);
 
-        // return solve(0,0,nums,target,t);
-        t[0][0]=true;
+        // int target=sum/2;
+        // // vector<vector<int>> t(n,vector<int>(target+1,-1));
+        // vector<vector<bool>> t(n+1,vector<bool>(target+1,false));
 
-        for(int i=0;i<n;i++){
-            for(int sum=0;sum<=target;sum++){
-                if(t[i][sum]){
-                    t[i+1][sum]=true;
+        // // return solve(0,0,nums,target,t);
+        // t[0][0]=true;
 
-                    if(nums[i]+sum<=target){
-                        t[i+1][sum+nums[i]]=true;
-                    }
-                }
-            }
-        }
-        return t[n][target];
+        // for(int i=0;i<n;i++){
+        //     for(int sum=0;sum<=target;sum++){
+        //         if(t[i][sum]){
+        //             t[i+1][sum]=true;
+
+        //             if(nums[i]+sum<=target){
+        //                 t[i+1][sum+nums[i]]=true;
+        //             }
+        //         }
+        //     }
+        // }
+        // return t[n][target];
     }
 };
