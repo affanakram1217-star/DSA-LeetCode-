@@ -47,20 +47,38 @@ public:
 
         // return ans;
         //Approach 2 TC->O(n)
-        int count1=0;//to store the number of elements less than target
+        // int count1=0;//to store the number of elements less than target
 
+        // for(int& num: nums){
+        //     if(num<tar){
+        //         count1++;
+        //     }
+        // }
+
+        // vector<int> result;
+        // for(int& num: nums){
+        //     if(num==tar){
+        //         result.push_back(count1);
+        //         count1++;
+        //     }
+        // }
+
+        // return result;
+
+        //Approach 3
+        int count1=0;//to store the number of elements less than target
+        int count2=0;//to store count of tar elements
         for(int& num: nums){
             if(num<tar){
                 count1++;
+            }else if(num==tar){
+                count2++;
             }
         }
 
         vector<int> result;
-        for(int& num: nums){
-            if(num==tar){
-                result.push_back(count1);
-                count1++;
-            }
+        for(int idx=count1;idx<count1+count2;idx++){
+            result.push_back(idx);
         }
 
         return result;
