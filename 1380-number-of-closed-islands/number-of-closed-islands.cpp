@@ -3,6 +3,7 @@ public:
     int m;
     int n;
     bool dfs(int i, int j,vector<vector<bool>>& vis,vector<vector<int>>& grid){
+        //out of bounds gaye
         if(i<0 || i>=m || j<0 || j>=n){
             return false;
         }
@@ -11,8 +12,8 @@ public:
         if(grid[i][j]==1 || vis[i][j]){
             return true;
         }
-        vis[i][j]=true;
-        
+        vis[i][j]=true; //current wale ko true mark kro
+
         bool left_side=dfs(i,j-1,vis,grid);
         bool right_side=dfs(i,j+1,vis,grid);
         bool up=dfs(i-1,j,vis,grid);
@@ -38,5 +39,7 @@ public:
         }
 
         return ans;
+
+        //flood fill se java me kiya h
     }
 };
