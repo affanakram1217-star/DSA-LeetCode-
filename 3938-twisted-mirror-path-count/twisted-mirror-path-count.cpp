@@ -1,7 +1,7 @@
 class Solution {
 public:
-    int LEFT = 0;
-    int UP   = 1;
+    int LEFT = 0;   // arrived from the left cell (was moving right)
+    int UP   = 1;   // arrived from the cell above (was moving down)
     int MOD = 1e9 + 7;
     int m, n;
 
@@ -9,46 +9,38 @@ public:
         m = grid.size();
         n = grid[0].size();
 
-        // t[row][col][LEFT] = ways to reach this cell by entering from the left
-        // t[row][col][UP]   = ways to reach this cell by entering from above
-        vector<vector<array<int, 2>>> t(m, vector<array<int, 2>>(n, {0, 0}));
 
-        // Start cell: one way to be here (start is never a mirror, slot is arbitrary)
-        t[0][0][LEFT] = 1;
+        vector<vector<array<int, 2>>> t(m + 1, vector<array<int, 2>>(n + 1, {0, 0}));
 
-        // Prefill 0th row: one way to reach each cell, until the first mirror
-        for (int col = 1; col < n; col++) {
-            t[0][col][LEFT] = 1;
-            if (grid[0][col] == 1)
-                break;          // deflected down, cells beyond stay 0
-        }
+        for (int row = m - 1; row >= 0; row--) {
+            for (int col = n - 1; col >= 0; col--) {
+                for (int cameFrom = 0; cameFrom < 2; cameFrom++) {
 
-        // Prefill 0th column: one way to reach each cell, until the first mirror
-        for (int row = 1; row < m; row++) {
-            t[row][0][UP] = 1;
-            if (grid[row][0] == 1)
-                break;          // deflected right, cells below stay 0
-        }
+                    // Destination reached
+                    if (row == m - 1 && col == n - 1) {
+                        t[row][col][cameFrom] = 1;
+                        continue;
+                    }
 
-        // Fill the rest
-        for (int row = 1; row < m; row++) {
-            for (int col = 1; col < n; col++) {
+                    // Mirror: reflect based on where we came from
+                    if (grid[row][col] == 1) {
+                        if (cameFrom == LEFT)
+                            t[row][col][cameFrom] = t[row + 1][col][UP];     // came from left -> turn down
+                        else
+                            t[row][col][cameFrom] = t[row][col + 1][LEFT];   // came from up -> turn right
+                        continue;
+                    }
 
-                // Entering from the left neighbour (row, col-1)
-                if (grid[row][col - 1] == 1)
-                    t[row][col][LEFT] = t[row][col - 1][UP];       // mirror: only UP-entrants turn right
-                else
-                    t[row][col][LEFT] = (t[row][col - 1][LEFT] + t[row][col - 1][UP]) % MOD;
+                    // Empty cell: branch into both moves
+                    long long total = 0;
+                    total += t[row][col + 1][LEFT];  // move right, next cell is entered from its LEFT
+                    total += t[row + 1][col][UP];    // move down, next cell is entered from its UP
 
-                // Entering from the top neighbour (row-1, col)
-                if (grid[row - 1][col] == 1)
-                    t[row][col][UP] = t[row - 1][col][LEFT];       // mirror: only LEFT-entrants turn down
-                else
-                    t[row][col][UP] = (t[row - 1][col][LEFT] + t[row - 1][col][UP]) % MOD;
+                    t[row][col][cameFrom] = total % MOD;
+                }
             }
         }
 
-        // Destination is always empty: every arrival counts, from either side
-        return (t[m - 1][n - 1][LEFT] + t[m - 1][n - 1][UP]) % MOD;
+        return t[0][0][LEFT]; // starting cell is always 0 (use either UP or LEFT)
     }
 };
