@@ -1,26 +1,17 @@
 class Solution {
 public:
-    int t[10001];
-    bool solve(int idx, int n, vector<int>& nums){
-        if(idx==n-1){
-            return true;
-        }
-
-        if(t[idx]!=-1){
-            return t[idx];
-        }
-
-        for(int i=1;i<=nums[idx];i++){
-            if(solve(idx+i,n,nums)==true){
-                return t[idx]=1;
-            }
-        }
-
-        return t[idx]=0;
-    }
     bool canJump(vector<int>& nums) {
         int n=nums.size();
-        memset(t,-1,sizeof(t));
-        return solve(0,n,nums);
+        vector<bool> t(n+1,0);
+        t[0]=true;
+        for(int i=1;i<n;i++){
+            for(int j=i-1;j>=0;j--){
+                if(j+nums[j]>=i && t[j]==true){
+                    t[i]=true;
+                    break;
+                }
+            }
+        }
+        return t[n-1];
     }
 };
