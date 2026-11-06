@@ -1,50 +1,46 @@
 class Solution {
 public:
-    void dfs(int u,unordered_map<int,vector<int>> &adj,vector<int>& vis, stack<int>& st,bool& cycle){
-        vis[u]=1;
-
-        for(int& v: adj[u]){
-            if(vis[v]==0){
-                dfs(v,adj,vis,st,cycle);
-            }else if(vis[v]==1){
-                cycle=true;
-                return;
-            }
-        }
-
-        vis[u]=2;
-        st.push(u);
-    }
     vector<int> topoSort(vector<vector<int>>& edges, int &n){
         unordered_map<int,vector<int>> adj;
+        vector<int> indegree(n+1,0);
         for(vector<int>& edge: edges){
             int u=edge[0];
             int v=edge[1];
 
             adj[u].push_back(v);
+            indegree[v]++;
         }
 
-        vector<int> vis(n+1,0);
-        stack<int> st;
-        vector<int> order;
-        bool cycle=false;
-
+        queue<int> q;
+        int count=0;
         for(int i=1;i<=n;i++){
-            if(vis[i]==0){
-                dfs(i,adj,vis,st,cycle);
-                if(cycle==true){
-                    return {};
+            if(indegree[i]==0){
+                q.push(i);
+                count++;
+            }
+        }
+
+        vector<int> order;
+        while(!q.empty()){
+            int u=q.front();
+            q.pop();
+            order.push_back(u);
+
+            for(int& v: adj[u]){
+                indegree[v]--;
+                if(indegree[v]==0){
+                    q.push(v);
+                    count++;
                 }
             }
         }
 
-        while(!st.empty()){
-            int u=st.top();
-            st.pop();
-            order.push_back(u);
+        if(count!=n){
+            return {};
         }
 
         return order;
+
     }
     vector<vector<int>> buildMatrix(int k, vector<vector<int>>& rowConditions, vector<vector<int>>& colConditions) {
         vector<int> topoRow=topoSort(rowConditions, k);
