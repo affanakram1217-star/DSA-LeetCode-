@@ -1,72 +1,75 @@
 class Solution {
 public:
-    void bellmanFord(int S, vector<vector<int>>& edges, vector<int>& result,int n){
-        fill(result.begin(), result.end(), 1e9+7);
-        result[S]=0;
+    #define P pair<int, int>
 
-        for(int i=1;i<n;i++){
-            for(auto& edge: edges){
-                int u=edge[0];
-                int v=edge[1];
-                int wt=edge[2];
+    // Khandaani Dijkstra's algorithm to find shortest paths from a source city
+    void dijkstra(int n, unordered_map<int, vector<P>>& adj, vector<int>& result, int S) {
+        priority_queue<P, vector<P>, greater<P>> pq;
+        pq.push({0, S});
+        fill(result.begin(), result.end(), INT_MAX);
+        result[S] = 0;  // Distance to source itself is zero
 
-                if(result[u]!=1e9+7 && result[u]+wt<result[v]){
-                    result[v]=result[u]+wt;
-                }
+        // Process nodes in priority order
+        while (!pq.empty()) {
+            int d = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
 
-                if(result[v]!=1e9+7 && result[v]+wt<result[u]){
-                    result[u]=result[v]+wt;
+            for (auto& p : adj[node]) {
+                int adjNode = p.first;
+                int dist = p.second;
+
+                if (d + dist < result[adjNode]) {
+                    result[adjNode] = d + dist;
+                    pq.push({d + dist, adjNode});
                 }
             }
         }
     }
 
-    int findTheResultCity(int n,  vector<vector<int>> &SPM, int D){
-        int resultCity=-1;
-        int leastCityReachcnt=INT_MAX;
+    int getCityWithFewestReachable(int n, const vector<vector<int>>& shortestPathMatrix, int distanceThreshold) {
+        int cityWithFewestReachable = -1;
+        int fewestReachableCount = INT_MAX;
 
-        for(int i=0;i<n;i++){
-            int currCityCnt=0;
-            for(int j=0;j<n;j++){
-                if(i!=j && SPM[i][j]<=D){
-                    currCityCnt++;
+        // Count number of cities reachable within the distance threshold for each city
+        for (int i = 0; i < n; i++) {
+            int reachableCount = 0;
+            for (int j = 0; j < n; j++) {
+                if (i != j && shortestPathMatrix[i][j] <= distanceThreshold) {
+                    reachableCount++;
                 }
             }
 
-            if(currCityCnt<=leastCityReachcnt){
-                leastCityReachcnt=currCityCnt;
-                resultCity=i;
+            if (reachableCount <= fewestReachableCount) {
+                fewestReachableCount = reachableCount;
+                cityWithFewestReachable = i;
             }
         }
-
-        return resultCity;
+        return cityWithFewestReachable;
     }
-
 
     int findTheCity(int n, vector<vector<int>>& edges, int distanceThreshold) {
-        //Approach 2-> Bellman ford
-        vector<vector<int>> SPM(n,vector<int>(n,1e9+7));
+        unordered_map<int, vector<P>> adj;
 
-        for(int i=0;i<n;i++){
-            SPM[i][i]=0;
+        vector<vector<int>> shortestPathMatrix(n, vector<int>(n, INT_MAX));
+
+        for (int i = 0; i < n; i++) {
+            shortestPathMatrix[i][i] = 0;  // Distance to itself is zero
         }
 
-   
-        for(auto& edge: edges){
-            int u=edge[0];
-            int v=edge[1];
-            int wt=edge[2];
-
-            SPM[u][v]=wt;
-            SPM[v][u]=wt;
-
+        for (const auto& edge : edges) {
+            int start = edge[0];
+            int end = edge[1];
+            int weight = edge[2];
+            adj[start].push_back({end, weight});
+            adj[end].push_back({start, weight});
         }
 
-        //calculating shortest path from each node
-        for(int i=0;i<n;i++){
-            bellmanFord(i,edges,SPM[i],n);
+        // Compute shortest paths from each city using Dijkstra's algorithm
+        for (int i = 0; i < n; i++) {
+            dijkstra(n, adj, shortestPathMatrix[i], i);
         }
 
-        return findTheResultCity(n,SPM,distanceThreshold);
+        return getCityWithFewestReachable(n, shortestPathMatrix, distanceThreshold);
     }
 };
