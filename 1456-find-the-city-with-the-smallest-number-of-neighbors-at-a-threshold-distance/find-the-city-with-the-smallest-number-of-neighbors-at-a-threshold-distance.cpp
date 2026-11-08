@@ -1,24 +1,21 @@
 class Solution {
 public:
-    void dijkstra(int S,unordered_map<int,vector<pair<int,int>>> &adj, vector<int>& result, int n){
-
-        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
-        pq.push({0,S});
-        fill(result.begin(), result.end(), INT_MAX);
+    void bellmanFord(int S, vector<vector<int>>& edges, vector<int>& result,int n){
+        fill(result.begin(), result.end(), 1e9+7);
         result[S]=0;
 
-        while(!pq.empty()){
-            int d=pq.top().first;
-            int node=pq.top().second;
-            pq.pop();
+        for(int i=1;i<n;i++){
+            for(auto& edge: edges){
+                int u=edge[0];
+                int v=edge[1];
+                int wt=edge[2];
 
-            for(auto& P: adj[node]){
-                int adjNode=P.first;
-                int dist=P.second;
+                if(result[u]!=1e9+7 && result[u]+wt<result[v]){
+                    result[v]=result[u]+wt;
+                }
 
-                if(d+dist<result[adjNode]){
-                    result[adjNode]=d+dist;
-                    pq.push({d+dist,adjNode});
+                if(result[v]!=1e9+7 && result[v]+wt<result[u]){
+                    result[u]=result[v]+wt;
                 }
             }
         }
@@ -47,26 +44,27 @@ public:
 
 
     int findTheCity(int n, vector<vector<int>>& edges, int distanceThreshold) {
-        //Approach 1->Dijkstra Algo
+        //Approach 2-> Bellman ford
         vector<vector<int>> SPM(n,vector<int>(n,1e9+7));
 
         for(int i=0;i<n;i++){
             SPM[i][i]=0;
         }
 
-        unordered_map<int,vector<pair<int,int>>> adj;
+   
         for(auto& edge: edges){
             int u=edge[0];
             int v=edge[1];
             int wt=edge[2];
 
-            adj[u].push_back({v,wt});
-            adj[v].push_back({u,wt});
+            SPM[u][v]=wt;
+            SPM[v][u]=wt;
+
         }
 
         //calculating shortest path from each node
         for(int i=0;i<n;i++){
-            dijkstra(i,adj,SPM[i],n);
+            bellmanFord(i,edges,SPM[i],n);
         }
 
         return findTheResultCity(n,SPM,distanceThreshold);
