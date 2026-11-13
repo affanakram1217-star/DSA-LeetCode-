@@ -20,12 +20,25 @@ public:
         };
 
         //NGR[i] = n
+        // vector<int> NGR(n, n);
+        // stack<int> st;
+        // for(int i = 0; i < n; i++) {
+        //     while(!st.empty() && nums[st.top()] < nums[i]) {
+        //         NGR[st.top()] = i;
+        //         st.pop();
+        //     }
+        //     st.push(i);
+        // }
+
+        //Approach 2 to find NGR
         vector<int> NGR(n, n);
         stack<int> st;
-        for(int i = 0; i < n; i++) {
-            while(!st.empty() && nums[st.top()] < nums[i]) {
-                NGR[st.top()] = i;
+        for(int i = n - 1; i >= 0; i--) {
+            while(!st.empty() && nums[st.top()] <= nums[i]) {
                 st.pop();
+            }
+            if(!st.empty()) {
+                NGR[i] = st.top();
             }
             st.push(i);
         }
