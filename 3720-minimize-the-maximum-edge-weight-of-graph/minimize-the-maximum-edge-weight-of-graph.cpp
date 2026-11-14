@@ -2,27 +2,22 @@ class Solution {
 public:
     typedef pair<int,int> P;
 
-    bool canAllReachZero(int n, int mid, unordered_map<int,vector<P>> &adj){
-        queue<int> q;
-        q.push(0);
-        vector<bool> vis(n,false);
-        vis[0]=true;
+    void dfs(int u,int mid,unordered_map<int,vector<P>> &adj,vector<bool> &vis){
+        vis[u]=true;
 
-        while(!q.empty()){
-            int u=q.front();
-            q.pop();
+        for(auto& p: adj[u]){
+            int v=p.first;
+            int wt=p.second;
 
-            for(auto& p:adj[u]){
-                int v=p.first;
-                int wt=p.second;
-
-                if(wt<=mid && !vis[v]){
-                    q.push(v);
-                    vis[v]=true;
-                }
+            if(wt<=mid && !vis[v]){
+                dfs(v,mid,adj,vis);
             }
         }
+    }
 
+    bool canAllReachZero(int n, int mid, unordered_map<int,vector<P>> &adj){
+        vector<bool> vis(n,false);
+        dfs(0,mid,adj,vis);
         for(int i=0;i<n;i++){
             if(vis[i]==false){
                 return false;
