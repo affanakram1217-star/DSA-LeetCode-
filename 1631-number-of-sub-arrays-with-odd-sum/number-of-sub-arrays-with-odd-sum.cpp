@@ -6,15 +6,11 @@ public:
         int odd=0;
         int even=1;
         int count=0;
-
-        vector<int> prefixSum(n);
-        prefixSum[0]=arr[0];
-        for(int i=1;i<n;i++){
-            prefixSum[i]=arr[i]+prefixSum[i-1];
-        }
+        int cumSum=0;
 
         for(int i=0;i<n;i++){
-            if(prefixSum[i]%2==0){
+            cumSum+=arr[i];
+            if(cumSum%2==0){
                 count=(count+odd)%M;
                 even++;
             }else{
