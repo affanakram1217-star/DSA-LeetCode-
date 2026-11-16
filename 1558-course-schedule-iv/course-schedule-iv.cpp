@@ -16,6 +16,19 @@ public:
 
         return reachable;
     }
+
+    void preProcess(unordered_map<int,vector<int>>&adj, int n,vector<vector<bool>>& isPrerequisite){
+
+        for(int u=0;u<n;u++){
+            for(int v=0;v<n;v++){
+                if(u!=v){
+                    vector<bool> vis(n,false);
+                    isPrerequisite[u][v]=dfs(u,v,adj,vis);
+                }
+            }
+        }
+    }
+
     vector<bool> checkIfPrerequisite(int numCourses, vector<vector<int>>& prerequisites, vector<vector<int>>& queries) {
         unordered_map<int,vector<int>> adj;
 
@@ -26,6 +39,9 @@ public:
             adj[u].push_back(v);
         }
 
+        vector<vector<bool>> isPrerequisite(numCourses,vector<bool>(numCourses,false));
+        preProcess(adj,numCourses,isPrerequisite);
+
         int q=queries.size();
         vector<bool> result(q,false);
 
@@ -33,8 +49,7 @@ public:
             int src=queries[i][0];
             int dest=queries[i][1];
             
-            vector<bool> vis(numCourses,false);
-            result[i]=dfs(src,dest,adj,vis);
+            result[i]=isPrerequisite[src][dest];
         }
 
         return result;
