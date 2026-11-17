@@ -1,3 +1,6 @@
+//Approach-2 (Bottom Up)
+//T.C : O(n^3 * div(n) + n^2 * k) ~ O(n^3)
+//S.C : O(n^2) (costMemo n*n + memo n*k)
 class Solution {
 public:
     int n;
@@ -8,10 +11,6 @@ public:
 
     int getCost(int i, int j) {
         int len = j - i + 1;
-
-        if(costMemo[i][j] != -1) {
-            return costMemo[i][j];
-        }
 
         int minCost = INT_MAX;
 
@@ -36,48 +35,44 @@ public:
             minCost = min(minCost, cost);
         }
 
-        return costMemo[i][j] = minCost;
-    }
-
-    int solve(int start, int k) {
-        if(k == 0) {
-            if(start == n)
-                return 0;
-            
-            return INT_MAX;
-        }
-
-        //early return
-        if(start + 2*k > n)
-            return INT_MAX;
-
-        if(memo[start][k] != -1) {
-            return memo[start][k];
-        }
-        
-        int result = INT_MAX;
-
-        for(int end = start+1; end < n; end++) {
-            //start...end -> 1 piece
-            int remainingCost = solve(end+1, k-1);
-
-            if(remainingCost == INT_MAX) {
-                continue;
-            }
-
-            result = min(result, getCost(start, end) + remainingCost);
-        }
-
-        return memo[start][k] = result;
+        return minCost;
     }
 
     int minimumChanges(string s, int k) {
         n = s.length();
         str = s;
 
-        costMemo.assign(n+1, vector<int>(n+1, -1)); //n*n
-        memo.assign(n+1, vector<int>(k+1, -1));
+        costMemo.assign(n+1, vector<int>(n+1, INT_MAX)); //n*n
+        for(int i = 0; i < n; i++) {
+            for(int j = i+1; j < n; j++) {
+                costMemo[i][j] = getCost(i, j);
+            }
+        }
 
-        return solve(0, k);
+        memo.assign(n+1, vector<int>(k+1, INT_MAX));
+
+        memo[n][0] = 0;
+
+        for(int start = n; start >= 0; start--) {
+            for(int pieces = 1; pieces <= k; pieces++) {
+                if(start + 2*pieces > n)
+                    continue;
+                
+                int result = INT_MAX;
+
+                for(int end = start+1; end < n; end++) {
+                    int remainCost = memo[end+1][pieces-1];
+
+                    if(remainCost == INT_MAX)
+                        continue;
+                    
+                    result = min(result, costMemo[start][end] + remainCost);
+                }
+
+                memo[start][pieces] = result;
+            }
+        }
+
+        return memo[0][k];
     }
 };
