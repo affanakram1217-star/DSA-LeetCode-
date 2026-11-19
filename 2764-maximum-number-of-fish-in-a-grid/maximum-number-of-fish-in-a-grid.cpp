@@ -4,23 +4,32 @@ public:
     int n;
     vector<vector<int>> directions={{0,1},{0,-1},{1,0},{-1,0}};
 
-    int dfs(int i, int j,vector<vector<int>>& grid){
-        if(i<0 || i>=m || j<0 || j>=n || grid[i][j]==0){
-            return 0;
-        }
-
+    int bfs(int i, int j,vector<vector<int>>& grid){
+        queue<pair<int,int>> q;
+        q.push({i,j});
         int fishCount=grid[i][j];
-        grid[i][j]=0; //yaha se machli utha liya
+        grid[i][j]=0;//machli le liye
 
-        for(auto& dir: directions){
-            int i_=i+dir[0];
-            int j_=j+dir[1];
+        while(!q.empty()){
+            i=q.front().first;
+            j=q.front().second;
+            q.pop();
 
-            fishCount+=dfs(i_,j_,grid);
+            for(auto& dir: directions){
+                int i_=i+dir[0];
+                int j_=j+dir[1];
+
+                if(i_>=0 && i_<m && j_>=0 && j_<n && grid[i_][j_]>0){
+                    q.push({i_,j_});
+                    fishCount+=grid[i_][j_];
+                    grid[i_][j_]=0;
+                }
+            }
         }
 
         return fishCount;
     }
+
     int findMaxFish(vector<vector<int>>& grid) {
         m=grid.size();
         n=grid[0].size();
@@ -29,7 +38,7 @@ public:
         for(int i=0;i<m;i++){
             for(int j=0;j<n;j++){
                 if(grid[i][j]>0){
-                    maxFish=max(maxFish,dfs(i,j,grid));
+                    maxFish=max(maxFish,bfs(i,j,grid));
                 }
             }
         }
