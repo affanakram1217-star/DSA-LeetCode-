@@ -30,11 +30,11 @@ public:
         //Since the Qn doesn't ask the maximum value at time = n, but
         //it asks for the maximum value overall at any time. 
         //So, we check the values for all time for 0....n-1 food i.e. last row depicts 0...n-1 (t[n-1])
-        long long ans = 0;
-        for(int time = 0;time <= n;time++){
-            ans = max(ans,t[n-1][time]);
-        }
+        // long long ans = 0;
+        // for(int time = 0;time <= n;time++){
+        //     ans = max(ans,t[n-1][time]);
+        // }
 
-        return ans;
+        return *max_element(t[n-1].begin(), t[n-1].end());
     }
 };
