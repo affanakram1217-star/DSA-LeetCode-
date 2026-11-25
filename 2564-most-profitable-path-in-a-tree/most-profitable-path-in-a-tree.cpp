@@ -25,26 +25,6 @@ public:
         return false;
     }
 
-    void DFSAlice(int curr, int t, int income, vector<bool>& vis,vector<int>& amount){
-        vis[curr]=true;
-
-        if(bobMap.find(curr)==bobMap.end() || t<bobMap[curr]){
-            income+=amount[curr];
-        }else if(t==bobMap[curr]){
-            income+=amount[curr]/2;
-        }
-
-        if(adj[curr].size()==1 && curr!=0){ //ab leaf node pe h aur leaf node jo h wo src nahi h
-            aliceIncome=max(aliceIncome,income);
-        }
-
-        for(auto& ngbr:adj[curr]){
-            if(!vis[ngbr]){
-                DFSAlice(ngbr,t+1,income,vis,amount);
-            }
-        }
-    }
-
     int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount) {
         int n=amount.size();
         aliceIncome=INT_MIN;
@@ -63,8 +43,33 @@ public:
 
         int income=0;
         vis.assign(n,false);
-        DFSAlice(0,0,income,vis,amount);
+        queue<vector<int>> q;
+        q.push({0,0,0});
+        
+        while(!q.empty()){
+            int node=q.front()[0];
+            int t=q.front()[1];
+            int income=q.front()[2];
+            q.pop();
 
+            if(bobMap.find(node)==bobMap.end() || t<bobMap[node]){
+                income+=amount[node];
+            }else if(t==bobMap[node]){
+                income+=amount[node]/2;
+            }
+
+            if(adj[node].size()==1 && node!=0){
+                aliceIncome=max(aliceIncome,income);
+            }
+
+            for(auto& ngbr:adj[node]){
+                if(!vis[ngbr]){
+                    q.push({ngbr,t+1,income});
+                }
+            }
+
+            vis[node]=true;
+        }
         return aliceIncome;
 
     }
